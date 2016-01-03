@@ -33,8 +33,7 @@ public class CategoriasResource {
 		if (dao.jaExiste(categoria))
 			return Response.notModified().build();
 
-		dao.insere(categoria);
-		return Response.ok(categoria).status(201).build();
+		return dao.insereOuAtualiza(categoria);
 	}
 
 	@GET

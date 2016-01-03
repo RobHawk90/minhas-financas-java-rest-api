@@ -9,21 +9,23 @@ import org.apache.commons.lang3.builder.HashCodeBuilder;
 
 @XmlRootElement
 @XmlAccessorType(XmlAccessType.FIELD)
-public class Categoria {
+public class Periodo {
 
 	private int id;
 	private String descricao;
-	private TipoCategoria tipo;
+	private UnidadeTemporal unidadeTemporal;
+	private int quantidade;
 
-	public Categoria() {
+	public Periodo() {
 	}
 
-	public Categoria(String descricao, TipoCategoria tipo) {
+	public Periodo(String descricao, UnidadeTemporal unidadeTemporal, int quantidade) {
 		this.descricao = descricao;
-		this.tipo = tipo;
+		this.unidadeTemporal = unidadeTemporal;
+		this.quantidade = quantidade;
 	}
 
-	public long getId() {
+	public int getId() {
 		return id;
 	}
 
@@ -39,12 +41,20 @@ public class Categoria {
 		this.descricao = descricao;
 	}
 
-	public TipoCategoria getTipo() {
-		return tipo;
+	public UnidadeTemporal getUnidadeTemporal() {
+		return unidadeTemporal;
 	}
 
-	public void setTipo(TipoCategoria tipo) {
-		this.tipo = tipo;
+	public void setUnidadeTemporal(UnidadeTemporal unidadeTemporal) {
+		this.unidadeTemporal = unidadeTemporal;
+	}
+
+	public int getQuantidade() {
+		return quantidade;
+	}
+
+	public void setQuantidade(int quantidade) {
+		this.quantidade = quantidade;
 	}
 
 	@Override
@@ -54,16 +64,18 @@ public class Categoria {
 
 	@Override
 	public int hashCode() {
-		return new HashCodeBuilder().append(id).append(descricao).append(tipo).toHashCode();
+		return new HashCodeBuilder().append(id).append(descricao).append(unidadeTemporal).append(quantidade)
+				.toHashCode();
 	}
 
 	@Override
 	public boolean equals(Object obj) {
-		if (obj instanceof Categoria) {
-			Categoria other = (Categoria) obj;
+		if (obj instanceof Periodo) {
+			Periodo other = (Periodo) obj;
 
 			return new EqualsBuilder().append(this.id, other.id).append(this.descricao, other.descricao)
-					.append(this.tipo, other.tipo).isEquals();
+					.append(this.unidadeTemporal, other.unidadeTemporal).append(this.quantidade, other.quantidade)
+					.isEquals();
 		}
 
 		return false;

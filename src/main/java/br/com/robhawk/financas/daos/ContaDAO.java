@@ -4,6 +4,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
 
+import javax.ws.rs.core.Response;
+
 import br.com.robhawk.financas.database.DAO;
 import br.com.robhawk.financas.models.Conta;
 
@@ -26,27 +28,31 @@ public class ContaDAO extends DAO<Conta> {
 		return conta;
 	}
 
-	public void insereOuAtualiza(Conta conta) {
+	public Response insereOuAtualiza(Conta conta) {
 		if (conta.getId() > 0)
-			atualiza(conta);
+			return atualiza(conta);
 		else
-			insere(conta);
+			return insere(conta);
 	}
 
-	public void atualiza(Conta conta) {
+	public Response atualiza(Conta conta) {
 		String sql = "UPDATE contas SET descricao = ? WHERE id = ?";
-		executa(sql, conta.getDescricao());
+		executa(sql, conta.getDescricao(), conta.getId());
+
+		return Response.ok(conta).build();
 	}
 
-	public void insere(Conta conta) {
+	public Response insere(Conta conta) {
 		String sql = "INSERT INTO contas(descricao) VALUES(?)";
 		int idGerado = executa(sql, conta.getDescricao());
 		conta.setId(idGerado);
+
+		return Response.ok(conta).status(201).build();
 	}
 
 	public boolean jaExiste(Conta conta) {
-		String sql = "SELECT COUNT(id) > 0 AS jaExiste FROM contas WHERE descricao = ?";
-		ResultSet rs = query(sql, conta.getDescricao());
+		String sql = "SELECT COUNT(id) > 0 AND id <> ? AS jaExiste FROM contas WHERE descricao = ?";
+		ResultSet rs = query(sql, conta.getId(), conta.getDescricao());
 
 		try {
 			if (rs.next())

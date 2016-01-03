@@ -4,6 +4,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
 
+import javax.ws.rs.core.Response;
+
 import br.com.robhawk.financas.database.DAO;
 import br.com.robhawk.financas.models.Categoria;
 import br.com.robhawk.financas.models.TipoCategoria;
@@ -32,22 +34,26 @@ public class CategoriaDAO extends DAO<Categoria> {
 		return categoria;
 	}
 
-	public void insereOuAtualiza(Categoria categoria) {
+	public Response insereOuAtualiza(Categoria categoria) {
 		if (categoria.getId() > 0)
-			atualiza(categoria);
+			return atualiza(categoria);
 		else
-			insere(categoria);
+			return insere(categoria);
 	}
 
-	public void atualiza(Categoria categoria) {
+	public Response atualiza(Categoria categoria) {
 		String sql = "UPDATE categorias SET descricao = ?, tipo = ? WHERE id = ?";
 		executa(sql, categoria.getDescricao(), categoria.getTipo().name(), categoria.getId());
+
+		return Response.ok(categoria).build();
 	}
 
-	public void insere(Categoria categoria) {
+	public Response insere(Categoria categoria) {
 		String sql = "INSERT INTO categorias(descricao, tipo) VALUES(?, ?)";
 		int idGerado = executa(sql, categoria.getDescricao(), categoria.getTipo().name());
 		categoria.setId(idGerado);
+
+		return Response.ok(categoria).status(201).build();
 	}
 
 	public void delete(int id) {
@@ -71,8 +77,8 @@ public class CategoriaDAO extends DAO<Categoria> {
 	}
 
 	public boolean jaExiste(Categoria categoria) {
-		String sql = "SELECT COUNT(id) > 0 AS jaExiste FROM categorias WHERE descricao = ?";
-		ResultSet rs = query(sql, categoria.getDescricao());
+		String sql = "SELECT COUNT(id) > 0 AND id <> ? AS jaExiste FROM categorias WHERE descricao = ?";
+		ResultSet rs = query(sql, categoria.getId(), categoria.getDescricao());
 
 		try {
 			if (rs.next())

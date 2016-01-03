@@ -14,6 +14,7 @@ import javax.ws.rs.core.GenericType;
 import javax.ws.rs.core.Response;
 
 import org.eclipse.jetty.server.Server;
+import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -40,8 +41,13 @@ public class ContasTest {
 	}
 
 	@AfterClass
-	public static void tearDown() throws Exception {
+	public static void tearDownClass() throws Exception {
 		server.stop();
+	}
+
+	@After
+	public void tearDown() {
+		DatabaseHelper.deletaRegistrosDaTabela("contas");
 	}
 
 	@Test
@@ -55,7 +61,26 @@ public class ContasTest {
 	}
 
 	@Test
-	public void naoAdicionaContasComMesmaDescricao() {
+	public void editaContas() {
+		target.request().post(json(new Conta("Alimentação")));
+
+		Response responseAdicionada = target.request(JSON).post(json(new Conta("Teste")));
+		Conta conta = responseAdicionada.readEntity(Conta.class);
+
+		conta.setDescricao("Alimentação");
+		Response responseEditaComDescricaoExistente = target.request().post(json(conta));
+		assertEquals(304, responseEditaComDescricaoExistente.getStatus());
+
+		conta.setDescricao("Corrente");
+		Response responseEditado = target.request(JSON).post(json(conta));
+		assertEquals(200, responseEditado.getStatus());
+
+		Conta contaEditada = target.path("/" + conta.getId()).request(JSON).get(Conta.class);
+		assertTrue(conta.equals(contaEditada));
+	}
+
+	@Test
+	public void naoSalvaContasComMesmaDescricao() {
 		// insere a conta
 		target.request(JSON).post(json(new Conta("Poupanca")));
 
@@ -93,8 +118,6 @@ public class ContasTest {
 
 	@Test
 	public void listaTodasAsContas() {
-		DatabaseHelper.deletaRegistrosDaTabela("contas");
-
 		List<Conta> novasContas = new ArrayList<>();
 		novasContas.add(new Conta("Corrente"));
 		novasContas.add(new Conta("Poupança"));

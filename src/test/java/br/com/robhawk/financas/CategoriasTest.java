@@ -5,6 +5,7 @@ import static br.com.robhawk.financas.models.TipoCategoria.RECEITA;
 import static br.com.robhawk.financas.utils.Entidade.JSON;
 import static br.com.robhawk.financas.utils.Entidade.json;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -15,19 +16,20 @@ import javax.ws.rs.core.GenericType;
 import javax.ws.rs.core.Response;
 
 import org.eclipse.jetty.server.Server;
+import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
 import br.com.robhawk.financas.database.DAO;
 import br.com.robhawk.financas.models.Categoria;
+import br.com.robhawk.financas.models.TipoCategoria;
 import br.com.robhawk.financas.utils.DatabaseHelper;
 
 public class CategoriasTest {
 
 	private static Server servidor;
-	private static WebTarget target;
-	private static int idGerado = 1;
+	private static WebTarget client;
 
 	@BeforeClass
 	public static void setUp() throws Exception {
@@ -35,53 +37,85 @@ public class CategoriasTest {
 		DAO.escopoTestes();
 		DAO.exibeSql(true);
 
-		target = ClientBuilder.newClient().target(Servidor.URL);
+		client = ClientBuilder.newClient().target(Servidor.URL + "/categorias");
 
 		servidor = Servidor.constroi();
 		servidor.start();
 	}
 
 	@AfterClass
-	public static void tearDown() throws Exception {
+	public static void tearDownClass() throws Exception {
 		servidor.stop();
-		idGerado = 0;
+	}
+
+	@After
+	public void tearDown() {
+		DatabaseHelper.deletaRegistrosDaTabela("categorias");
 	}
 
 	@Test
 	public void adicionaCategorias() {
-		List<Categoria> categorias = constroiCategorias();
+		Response response = client.request(JSON).post(json(new Categoria("Material Escolar", DESPESA)));
+		Categoria categoriaGerada = response.readEntity(Categoria.class);
 
-		categorias.forEach(categoria -> {
-			Response response = target.path("/categorias").request(JSON).post(json(categoria));
-			Categoria categoriaGerada = response.readEntity(Categoria.class);
-			assertEquals(201, response.getStatus());
-			assertEquals(idGerado++, categoriaGerada.getId());
-		});
-
+		assertEquals(201, response.getStatus());
+		assertTrue(categoriaGerada.getId() > 0);
+	}
+	
+	@Test public void editaCategorias(){
+		client.request().post(json(new Categoria("Aulas", RECEITA)));
+		
+		Response responseAdicionada = client.request().post(json(new Categoria("Teste", RECEITA)));
+		Categoria categoria = responseAdicionada.readEntity(Categoria.class);
+		
+		categoria.setDescricao("Aulas");
+		Response responseEditaComDescricaoExistente = client.request().post(json(categoria));
+		assertEquals(304, responseEditaComDescricaoExistente.getStatus());
+		
+		categoria.setDescricao("Faculdade");
+		categoria.setTipo(TipoCategoria.DESPESA);
+		Response responseEditada = client.request().post(json(categoria));
+		assertEquals(200, responseEditada.getStatus());
+		
+		Categoria categoriaEditada = client.path("/"+categoria.getId()).request(JSON).get(Categoria.class);
+		assertTrue(categoria.equals(categoriaEditada));
 	}
 
 	@Test
 	public void buscaCategoriasPelaDescricao() {
-		Categoria categoria = target.path("/categorias/descricao/Entretenimento").request().get(Categoria.class);
+		client.request().post(json(new Categoria("Entretenimento", DESPESA)));
 
-		assertEquals(2, categoria.getId());
+		Categoria categoria = client.path("/descricao/Entretenimento").request().get(Categoria.class);
+
+		assertTrue(categoria.getId() > 0);
 		assertEquals("Entretenimento", categoria.getDescricao());
 	}
 
 	@Test
 	public void buscaCategoriaPorId() {
-		Categoria categoria = target.path("/categorias/1").request(JSON).get(Categoria.class);
+		Response responseAdicionada = client.request().post(json(new Categoria("Alimentação", DESPESA)));
+		long idCategoria = responseAdicionada.readEntity(Categoria.class).getId();
+
+		Categoria categoria = client.path("/" + idCategoria).request(JSON).get(Categoria.class);
 		assertEquals("Alimentação", categoria.getDescricao());
-		assertEquals(1, categoria.getId());
+		assertTrue(categoria.getId() > 0);
 	}
 
 	@Test
 	public void listaCategoriasPorTipoDespesaReceita() {
-		List<Categoria> categoriasDespesa = target.path("/categorias/tipo/despesa").request(JSON)
+		List<Categoria> categorias = new ArrayList<>();
+		categorias.add(new Categoria("Alimentação", DESPESA));
+		categorias.add(new Categoria("Entretenimento", DESPESA));
+		categorias.add(new Categoria("Transporte", DESPESA));
+		categorias.add(new Categoria("Freelance", RECEITA));
+		categorias.add(new Categoria("Salario", RECEITA));
+		categorias.forEach(categoria -> client.request().post(json(categoria)));
+
+		List<Categoria> categoriasDespesa = client.path("/tipo/despesa").request(JSON)
 				.get(new GenericType<List<Categoria>>() {
 				});
 
-		List<Categoria> categoriasReceita = target.path("/categorias/tipo/receita").request(JSON)
+		List<Categoria> categoriasReceita = client.path("/tipo/receita").request(JSON)
 				.get(new GenericType<List<Categoria>>() {
 				});
 
@@ -90,19 +124,13 @@ public class CategoriasTest {
 	}
 
 	@Test
-	public void jaExisteCategoria() {
-		Response response = target.path("/categorias").request().post(json(new Categoria("Alimentação", DESPESA)));
+	public void naoSalvaCategoriaComMesmaDescricao() {
+		Categoria categoria = new Categoria("Alimentação", DESPESA);
+		client.request().post(json(categoria));
+
+		Response response = client.request().post(json(categoria));
 
 		assertEquals(304, response.getStatus());
 	}
 
-	public static final List<Categoria> constroiCategorias() {
-		List<Categoria> categorias = new ArrayList<>();
-		categorias.add(new Categoria("Alimentação", DESPESA));
-		categorias.add(new Categoria("Entretenimento", DESPESA));
-		categorias.add(new Categoria("Transporte", DESPESA));
-		categorias.add(new Categoria("Freelance", RECEITA));
-		categorias.add(new Categoria("Salario", RECEITA));
-		return categorias;
-	}
 }

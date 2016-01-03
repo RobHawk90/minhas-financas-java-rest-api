@@ -33,9 +33,7 @@ public class ContasResource {
 		if (dao.jaExiste(conta))
 			return Response.notModified().build();
 
-		dao.insere(conta);
-
-		return Response.ok(conta).status(201).build();
+		return dao.insereOuAtualiza(conta);
 	}
 
 	@DELETE

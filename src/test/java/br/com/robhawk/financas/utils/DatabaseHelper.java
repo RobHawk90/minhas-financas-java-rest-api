@@ -37,11 +37,18 @@ public class DatabaseHelper {
 
 	public static void deletaRegistrosDaTabela(String tabela) {
 		try {
-			String sql = "DELETE FROM %s WHERE id > 0";
-			PreparedStatement ps = conexao.prepareStatement(String.format(sql, tabela));
+			PreparedStatement ps = conexao.prepareStatement("TRUNCATE " + tabela);
 			ps.execute();
 		} catch (SQLException e) {
-			e.printStackTrace();
+			System.err.println("truncate não funciona");
+
+			try {
+				String sql = "DELETE FROM %s WHERE id > 0";
+				PreparedStatement ps = conexao.prepareStatement(String.format(sql, tabela));
+				ps.execute();
+			} catch (SQLException e1) {
+				System.err.println(tabela + " tem dependentes e não pode ser removido");
+			}
 		}
 	}
 }

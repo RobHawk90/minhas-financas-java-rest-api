@@ -41,6 +41,11 @@
 			<artifactId>mysql-connector-java</artifactId>
 			<version>5.1.38</version>
 		</dependency>
+		<dependency>
+			<groupId>org.apache.commons</groupId>
+			<artifactId>commons-lang3</artifactId>
+			<version>3.4</version>
+		</dependency>
 
 		<dependency>
 			<groupId>org.glassfish.jersey.core</groupId>
@@ -53,12 +58,6 @@
 			<version>4.12</version>
 			<scope>test</scope>
 		</dependency>
-		<!-- <dependency> ordenar testes de integração
-			<groupId>org.testng</groupId>
-			<artifactId>testng</artifactId>
-			<version>6.9.10</version>
-			<scope>test</scope>
-		</dependency> -->
 		<dependency> <!-- executar comandos sql em batch: resetar banco de testes -->
 			<groupId>org.apache.ibatis</groupId>
 			<artifactId>ibatis-core</artifactId>

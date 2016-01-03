@@ -4,6 +4,9 @@ import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlRootElement;
 
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
+
 @XmlRootElement
 @XmlAccessorType(XmlAccessType.FIELD)
 public class Conta {
@@ -38,4 +41,21 @@ public class Conta {
 	public String toString() {
 		return descricao;
 	}
+
+	@Override
+	public int hashCode() {
+		return new HashCodeBuilder().append(id).append(descricao).toHashCode();
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (obj instanceof Conta) {
+			Conta other = (Conta) obj;
+
+			return new EqualsBuilder().append(this.id, other.id).append(this.descricao, other.descricao).isEquals();
+		}
+
+		return false;
+	}
+
 }
