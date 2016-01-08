@@ -17,6 +17,7 @@ DROP TABLE IF EXISTS `minhas_financas_testes`.`contas` ;
 CREATE TABLE IF NOT EXISTS `minhas_financas_testes`.`contas` (
   `id` INT NOT NULL AUTO_INCREMENT,
   `descricao` VARCHAR(100) NOT NULL,
+  `saldo` DOUBLE NOT NULL,
   PRIMARY KEY (`id`),
   UNIQUE INDEX `descricao_UNIQUE` (`descricao` ASC))
 ENGINE = InnoDB;

@@ -25,6 +25,11 @@ public class ContaDAO extends DAO<Conta> {
 		} catch (SQLException e) {
 		}
 
+		try {
+			conta.setSaldo(rs.getDouble("saldo"));
+		} catch (SQLException e) {
+		}
+
 		return conta;
 	}
 
@@ -36,15 +41,15 @@ public class ContaDAO extends DAO<Conta> {
 	}
 
 	public Response atualiza(Conta conta) {
-		String sql = "UPDATE contas SET descricao = ? WHERE id = ?";
-		executa(sql, conta.getDescricao(), conta.getId());
+		String sql = "UPDATE contas SET descricao = ?, saldo = ? WHERE id = ?";
+		executa(sql, conta.getDescricao(), conta.getSaldo(), conta.getId());
 
 		return Response.ok(conta).build();
 	}
 
 	public Response insere(Conta conta) {
-		String sql = "INSERT INTO contas(descricao) VALUES(?)";
-		int idGerado = executa(sql, conta.getDescricao());
+		String sql = "INSERT INTO contas(descricao, saldo) VALUES(?, ?)";
+		int idGerado = executa(sql, conta.getDescricao(), conta.getSaldo());
 		conta.setId(idGerado);
 
 		return Response.ok(conta).status(201).build();
