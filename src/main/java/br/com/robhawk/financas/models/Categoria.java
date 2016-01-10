@@ -1,18 +1,24 @@
 package br.com.robhawk.financas.models;
 
+import javax.validation.constraints.NotNull;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlRootElement;
 
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
+import org.hibernate.validator.constraints.NotEmpty;
 
 @XmlRootElement
 @XmlAccessorType(XmlAccessType.FIELD)
 public class Categoria {
 
 	private int id;
+
+	@NotEmpty(message = "A categoria deve conter uma descrição")
 	private String descricao;
+
+	@NotNull(message = "A categoria deve conter um tipo")
 	private TipoCategoria tipo;
 
 	public Categoria() {

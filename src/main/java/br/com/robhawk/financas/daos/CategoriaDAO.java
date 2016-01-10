@@ -4,8 +4,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
 
-import javax.ws.rs.core.Response;
-
 import br.com.robhawk.financas.database.DAO;
 import br.com.robhawk.financas.models.Categoria;
 import br.com.robhawk.financas.models.TipoCategoria;
@@ -34,31 +32,21 @@ public class CategoriaDAO extends DAO<Categoria> {
 		return categoria;
 	}
 
-	public Response insereOuAtualiza(Categoria categoria) {
-		if (categoria.getId() > 0)
-			return atualiza(categoria);
-		else
-			return insere(categoria);
-	}
-
-	public Response atualiza(Categoria categoria) {
+	public boolean atualiza(Categoria categoria) {
 		String sql = "UPDATE categorias SET descricao = ?, tipo = ? WHERE id = ?";
-		executa(sql, categoria.getDescricao(), categoria.getTipo().name(), categoria.getId());
-
-		return Response.ok(categoria).build();
+		return executa(sql, categoria.getDescricao(), categoria.getTipo().name(), categoria.getId());
 	}
 
-	public Response insere(Categoria categoria) {
+	public boolean insere(Categoria categoria) {
 		String sql = "INSERT INTO categorias(descricao, tipo) VALUES(?, ?)";
-		int idGerado = executa(sql, categoria.getDescricao(), categoria.getTipo().name());
+		int idGerado = executaInsert(sql, categoria.getDescricao(), categoria.getTipo().name());
 		categoria.setId(idGerado);
-
-		return Response.ok(categoria).status(201).build();
+		return sucesso(idGerado);
 	}
 
-	public void delete(int id) {
+	public boolean delete(int id) {
 		String sql = "DELETE FROM categorias WHERE id = ?";
-		executa(sql, id);
+		return executa(sql, id);
 	}
 
 	public Categoria buscaPela(String descricao) {

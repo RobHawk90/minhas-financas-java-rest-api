@@ -25,6 +25,7 @@ import org.junit.Test;
 import br.com.robhawk.financas.database.DAO;
 import br.com.robhawk.financas.models.Periodo;
 import br.com.robhawk.financas.utils.DatabaseHelper;
+import br.com.robhawk.financas.utils.ResponseValidator;
 
 public class PeriodosTest {
 
@@ -149,5 +150,16 @@ public class PeriodosTest {
 		// tenta buscar o periodo removido
 		Response responseBuscaPeriodo = client.path("/" + idPeriodo).request().get();
 		assertEquals(404, responseBuscaPeriodo.getStatus());
+	}
+
+	@Test
+	public void naoSalvaPeriodoInvalido() {
+		Response response = client.request(JSON).post(json(new Periodo()));
+		ResponseValidator validador = new ResponseValidator(response);
+
+		validador.assertBadRequest();
+		validador.assertMensagemIgual("O período deve conter uma descrição");
+		validador.assertMensagemIgual("O período deve conter uma unidade temporal: MES, DIA ou ANO");
+		validador.assertMensagemIgual("A quantidade do período deve ser maior que zero");
 	}
 }

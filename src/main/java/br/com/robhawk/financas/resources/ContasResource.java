@@ -4,6 +4,7 @@ import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 
 import java.util.List;
 
+import javax.validation.Valid;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
@@ -20,7 +21,7 @@ import br.com.robhawk.financas.models.Conta;
 @Path("/contas")
 public class ContasResource {
 
-	private ContaDAO dao;
+	private final ContaDAO dao;
 
 	public ContasResource() {
 		dao = new ContaDAO();
@@ -29,19 +30,27 @@ public class ContasResource {
 	@POST
 	@Consumes(APPLICATION_JSON)
 	@Produces(APPLICATION_JSON)
-	public Response adicionaConta(Conta conta) {
+	public Response salvaConta(@Valid Conta conta) {
 		if (dao.jaExiste(conta))
 			return Response.notModified().build();
 
-		return dao.insereOuAtualiza(conta);
+		if (conta.getId() > 0) {
+			if (dao.atualiza(conta))
+				return Response.ok(conta).build();
+		} else if (dao.insere(conta))
+			return Response.ok(conta).status(201).build();
+
+		return Response.serverError().build();
 	}
 
 	@DELETE
 	@Path("/{id}")
-	@Consumes(APPLICATION_JSON)
+	@Produces(APPLICATION_JSON)
 	public Response removeConta(@PathParam("id") int id) {
-		dao.deleta(id);
-		return Response.noContent().build();
+		if (dao.deleta(id))
+			return Response.noContent().build();
+
+		return Response.serverError().build();
 	}
 
 	@GET

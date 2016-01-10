@@ -4,8 +4,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
 
-import javax.ws.rs.core.Response;
-
 import br.com.robhawk.financas.database.DAO;
 import br.com.robhawk.financas.models.Conta;
 
@@ -33,26 +31,16 @@ public class ContaDAO extends DAO<Conta> {
 		return conta;
 	}
 
-	public Response insereOuAtualiza(Conta conta) {
-		if (conta.getId() > 0)
-			return atualiza(conta);
-		else
-			return insere(conta);
-	}
-
-	public Response atualiza(Conta conta) {
+	public boolean atualiza(Conta conta) {
 		String sql = "UPDATE contas SET descricao = ?, saldo = ? WHERE id = ?";
-		executa(sql, conta.getDescricao(), conta.getSaldo(), conta.getId());
-
-		return Response.ok(conta).build();
+		return executa(sql, conta.getDescricao(), conta.getSaldo(), conta.getId());
 	}
 
-	public Response insere(Conta conta) {
+	public boolean insere(Conta conta) {
 		String sql = "INSERT INTO contas(descricao, saldo) VALUES(?, ?)";
-		int idGerado = executa(sql, conta.getDescricao(), conta.getSaldo());
+		int idGerado = executaInsert(sql, conta.getDescricao(), conta.getSaldo());
 		conta.setId(idGerado);
-
-		return Response.ok(conta).status(201).build();
+		return sucesso(idGerado);
 	}
 
 	public boolean jaExiste(Conta conta) {
@@ -69,9 +57,9 @@ public class ContaDAO extends DAO<Conta> {
 		return false;
 	}
 
-	public void deleta(int id) {
+	public boolean deleta(int id) {
 		String sql = "DELETE FROM contas WHERE id = ?";
-		executa(sql, id);
+		return executa(sql, id);
 	}
 
 	public Conta buscaPorId(int id) {

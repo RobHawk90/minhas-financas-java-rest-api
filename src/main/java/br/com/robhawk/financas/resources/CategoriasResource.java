@@ -4,6 +4,8 @@ import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 
 import java.util.List;
 
+import javax.validation.Valid;
+import javax.validation.constraints.Min;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
@@ -29,11 +31,17 @@ public class CategoriasResource {
 	@POST
 	@Consumes(APPLICATION_JSON)
 	@Produces(APPLICATION_JSON)
-	public Response adiciona(Categoria categoria) {
+	public Response adiciona(@Valid Categoria categoria) {
 		if (dao.jaExiste(categoria))
 			return Response.notModified().build();
 
-		return dao.insereOuAtualiza(categoria);
+		if (categoria.getId() > 0) {
+			if (dao.atualiza(categoria))
+				return Response.ok(categoria).build();
+		} else if (dao.insere(categoria))
+			return Response.ok(categoria).status(201).build();
+
+		return Response.serverError().build();
 	}
 
 	@GET
@@ -56,7 +64,7 @@ public class CategoriasResource {
 	@GET
 	@Path("/{id}")
 	@Produces(APPLICATION_JSON)
-	public Response buscaPorId(@PathParam("id") long id) {
+	public Response buscaPorId(@Min(1) @PathParam("id") int id) {
 		Categoria categoria = dao.buscaPor(id);
 		return Response.ok(categoria).build();
 	}

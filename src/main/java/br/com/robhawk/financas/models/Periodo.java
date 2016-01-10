@@ -1,19 +1,28 @@
 package br.com.robhawk.financas.models;
 
+import javax.validation.constraints.Min;
+import javax.validation.constraints.NotNull;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlRootElement;
 
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
+import org.hibernate.validator.constraints.NotEmpty;
 
 @XmlRootElement
 @XmlAccessorType(XmlAccessType.FIELD)
 public class Periodo {
 
 	private int id;
+
+	@NotEmpty(message = "O período deve conter uma descrição")
 	private String descricao;
+
+	@NotNull(message = "O período deve conter uma unidade temporal: MES, DIA ou ANO")
 	private UnidadeTemporal unidadeTemporal;
+
+	@Min(value = 1, message = "A quantidade do período deve ser maior que zero")
 	private int quantidade;
 
 	public Periodo() {

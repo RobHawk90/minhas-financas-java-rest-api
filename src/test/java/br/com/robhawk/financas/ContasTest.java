@@ -14,7 +14,6 @@ import javax.ws.rs.core.GenericType;
 import javax.ws.rs.core.Response;
 
 import org.eclipse.jetty.server.Server;
-import org.glassfish.jersey.filter.LoggingFilter;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
@@ -23,6 +22,7 @@ import org.junit.Test;
 import br.com.robhawk.financas.database.DAO;
 import br.com.robhawk.financas.models.Conta;
 import br.com.robhawk.financas.utils.DatabaseHelper;
+import br.com.robhawk.financas.utils.ResponseValidator;
 
 public class ContasTest {
 
@@ -38,7 +38,7 @@ public class ContasTest {
 		server = Servidor.constroi();
 		server.start();
 
-		target = ClientBuilder.newClient().target(Servidor.URL + "/contas").register(new LoggingFilter());
+		target = ClientBuilder.newClient().target(Servidor.URL + "/contas");
 	}
 
 	@AfterClass
@@ -133,4 +133,12 @@ public class ContasTest {
 		assertTrue(contas.stream().anyMatch(conta -> conta.getDescricao().equals("Poupança"))); // verifica um dos resultados aproveitando para verificar o encoding
 	}
 
+	@Test
+	public void naoSalvaContaInvalida() {
+		Response response = target.request(JSON).post(json(new Conta())); // envia uma conta inválida
+		ResponseValidator validator = new ResponseValidator(response);
+
+		validator.assertBadRequest();
+		validator.assertMensagemIgual("A conta deve conter uma descrição");
+	}
 }

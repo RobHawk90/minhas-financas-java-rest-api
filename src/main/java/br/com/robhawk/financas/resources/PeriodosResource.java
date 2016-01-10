@@ -4,6 +4,8 @@ import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 
 import java.util.List;
 
+import javax.validation.Valid;
+import javax.validation.constraints.Min;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
@@ -29,18 +31,26 @@ public class PeriodosResource {
 	@POST
 	@Consumes(APPLICATION_JSON)
 	@Produces(APPLICATION_JSON)
-	public Response salvaPeriodo(Periodo periodo) {
+	public Response salvaPeriodo(@Valid Periodo periodo) {
 		if (dao.jaExiste(periodo))
 			return Response.notModified().build();
 
-		return dao.insereOuAtualiza(periodo);
+		if (periodo.getId() > 0) {
+			if (dao.atualiza(periodo))
+				return Response.ok(periodo).build();
+		} else if (dao.insere(periodo))
+			return Response.ok(periodo).status(201).build();
+
+		return Response.serverError().build();
 	}
 
 	@DELETE
 	@Path("/{id}")
-	public Response removePeriodo(@PathParam("id") int id) {
-		dao.deleta(id);
-		return Response.noContent().build();
+	public Response removePeriodo(@Min(1) @PathParam("id") int id) {
+		if (dao.deleta(id))
+			return Response.noContent().build();
+
+		return Response.serverError().build();
 	}
 
 	@GET

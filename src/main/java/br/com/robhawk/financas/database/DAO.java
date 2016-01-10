@@ -18,28 +18,16 @@ public abstract class DAO<T> {
 		conexao = Conector.conecta(escopo);
 	}
 
-	public static final void setEscopo(EscopoConexao escopo) {
-		DAO.escopo = escopo;
-	}
-
 	public static final void escopoTestes() {
 		escopo = EscopoConexao.TESTES;
-	}
-
-	public static final boolean exibeSql() {
-		return exibirSql;
 	}
 
 	public static final void exibeSql(boolean exibirSql) {
 		DAO.exibirSql = exibirSql;
 	}
 
-	public static final boolean ocultaSql() {
-		return !exibirSql;
-	}
-
-	public static final void ocultaSql(boolean ocultarSql) {
-		exibirSql = ocultarSql;
+	public boolean sucesso(int idGerado) {
+		return idGerado >= 0;
 	}
 
 	public abstract T extrai(ResultSet rs);
@@ -56,7 +44,18 @@ public abstract class DAO<T> {
 		return ps;
 	}
 
-	public int executa(String sql, Object... params) {
+	public boolean executa(String sql, Object... params) {
+		try {
+			PreparedStatement ps = prepara(sql, params);
+			ps.execute();
+			return true;
+		} catch (SQLException e) {
+			e.printStackTrace();
+			return false;
+		}
+	}
+
+	public int executaInsert(String sql, Object... params) {
 		try {
 			PreparedStatement ps = prepara(sql, params);
 			ps.execute();

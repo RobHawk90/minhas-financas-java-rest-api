@@ -5,6 +5,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
+import org.hibernate.validator.constraints.NotEmpty;
 import org.joda.money.CurrencyUnit;
 import org.joda.money.Money;
 
@@ -12,6 +13,8 @@ import org.joda.money.Money;
 public class Conta {
 
 	private int id;
+
+	@NotEmpty(message = "A conta deve conter uma descrição")
 	private String descricao;
 	private Money saldo;
 	public static final CurrencyUnit MOEDA_REAL = CurrencyUnit.getInstance("BRL");
@@ -22,6 +25,7 @@ public class Conta {
 	}
 
 	public Conta() {
+		this.saldo = Money.of(MOEDA_REAL, 0);
 	}
 
 	@XmlAttribute

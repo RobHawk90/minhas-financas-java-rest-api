@@ -1,18 +1,13 @@
 package br.com.robhawk.financas;
 
-import java.io.IOException;
-
-import javax.ws.rs.container.ContainerRequestContext;
-import javax.ws.rs.container.ContainerResponseContext;
-import javax.ws.rs.container.ContainerResponseFilter;
-import javax.ws.rs.core.MediaType;
-
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
 import org.glassfish.jersey.server.ServerProperties;
 
-public class Servidor implements ContainerResponseFilter {
+import br.com.robhawk.financas.providers.HeaderResponseFilter;
+
+public class Servidor {
 	public static final String URL = "http://localhost:8080/estoque-api";
 
 	public static void main(String[] args) throws Exception {
@@ -34,23 +29,13 @@ public class Servidor implements ContainerResponseFilter {
 		jerseyServlet.setInitOrder(0);
 		jerseyServlet.setInitParameter(ServerProperties.PROVIDER_PACKAGES, "br.com.robhawk.financas.resources");
 		jerseyServlet.setInitParameter(ServerProperties.JSON_PROCESSING_FEATURE_DISABLE, "false");
+		jerseyServlet.setInitParameter(ServerProperties.BV_SEND_ERROR_IN_RESPONSE, "true");
+		jerseyServlet.setInitParameter(ServerProperties.BV_DISABLE_VALIDATE_ON_EXECUTABLE_OVERRIDE_CHECK, "true");
+		jerseyServlet.setInitParameter(ServerProperties.PROVIDER_CLASSNAMES, HeaderResponseFilter.class.getName());
 
 		Server jettyServer = new Server(8080);
 		jettyServer.setHandler(context);
 		return jettyServer;
 	}
 
-	@Override
-	public void filter(ContainerRequestContext request, ContainerResponseContext response) throws IOException {
-		MediaType type = response.getMediaType();
-
-		if (type != null) {
-			String contentType = type.toString();
-
-			if (!contentType.contains("charset")) {
-				contentType = contentType + ";charset=utf-8";
-				response.getHeaders().putSingle("Content-Type", contentType);
-			}
-		}
-	}
 }

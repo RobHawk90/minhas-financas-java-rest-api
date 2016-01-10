@@ -16,6 +16,7 @@ import javax.ws.rs.core.GenericType;
 import javax.ws.rs.core.Response;
 
 import org.eclipse.jetty.server.Server;
+import org.glassfish.jersey.filter.LoggingFilter;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
@@ -25,6 +26,7 @@ import br.com.robhawk.financas.database.DAO;
 import br.com.robhawk.financas.models.Categoria;
 import br.com.robhawk.financas.models.TipoCategoria;
 import br.com.robhawk.financas.utils.DatabaseHelper;
+import br.com.robhawk.financas.utils.ResponseValidator;
 
 public class CategoriasTest {
 
@@ -37,7 +39,7 @@ public class CategoriasTest {
 		DAO.escopoTestes();
 		DAO.exibeSql(true);
 
-		client = ClientBuilder.newClient().target(Servidor.URL + "/categorias");
+		client = ClientBuilder.newClient().target(Servidor.URL + "/categorias").register(new LoggingFilter());
 
 		servidor = Servidor.constroi();
 		servidor.start();
@@ -61,23 +63,24 @@ public class CategoriasTest {
 		assertEquals(201, response.getStatus());
 		assertTrue(categoriaGerada.getId() > 0);
 	}
-	
-	@Test public void editaCategorias(){
+
+	@Test
+	public void editaCategorias() {
 		client.request().post(json(new Categoria("Aulas", RECEITA)));
-		
+
 		Response responseAdicionada = client.request().post(json(new Categoria("Teste", RECEITA)));
 		Categoria categoria = responseAdicionada.readEntity(Categoria.class);
-		
+
 		categoria.setDescricao("Aulas");
 		Response responseEditaComDescricaoExistente = client.request().post(json(categoria));
 		assertEquals(304, responseEditaComDescricaoExistente.getStatus());
-		
+
 		categoria.setDescricao("Faculdade");
 		categoria.setTipo(TipoCategoria.DESPESA);
 		Response responseEditada = client.request().post(json(categoria));
 		assertEquals(200, responseEditada.getStatus());
-		
-		Categoria categoriaEditada = client.path("/"+categoria.getId()).request(JSON).get(Categoria.class);
+
+		Categoria categoriaEditada = client.path("/" + categoria.getId()).request(JSON).get(Categoria.class);
 		assertTrue(categoria.equals(categoriaEditada));
 	}
 
@@ -133,4 +136,13 @@ public class CategoriasTest {
 		assertEquals(304, response.getStatus());
 	}
 
+	@Test
+	public void naoAdicionaCategoriaInvalida() {
+		Response response = client.request(JSON).post(json(new Categoria()));
+		ResponseValidator validador = new ResponseValidator(response);
+
+		validador.assertBadRequest();
+		validador.assertMensagemIgual("A categoria deve conter uma descrição");
+		validador.assertMensagemIgual("A categoria deve conter um tipo");
+	}
 }
