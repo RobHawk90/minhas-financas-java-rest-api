@@ -37,12 +37,29 @@ public class Conector {
 		return TESTES;
 	}
 
+	public static Connection criaBd(EscopoConexao escopo) {
+		if (TESTES != null)
+			return TESTES;
+
+		try {
+			Class.forName("com.mysql.jdbc.Driver");
+			TESTES = DriverManager.getConnection(escopo.getUrl(), escopo.getUsuario(), escopo.getSenha());
+		} catch (ClassNotFoundException | SQLException e) {
+			e.printStackTrace();
+		}
+
+		return TESTES;
+	}
+
 	public static Connection conecta(EscopoConexao escopo) {
 		if (escopo == EscopoConexao.PRODUCAO)
 			return conectaEmProducao(escopo);
 
 		if (escopo == EscopoConexao.TESTES)
 			return conectaEmTestes(escopo);
+
+		if (escopo == EscopoConexao.CRIACAO)
+			return criaBd(escopo);
 
 		return null;
 	}

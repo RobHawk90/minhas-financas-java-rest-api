@@ -49,7 +49,7 @@ public class CategoriaDAO extends DAO<Categoria> {
 		return executa(sql, id);
 	}
 
-	public Categoria buscaPela(String descricao) {
+	public Categoria buscaPor(String descricao) {
 		String sql = "SELECT * FROM categorias WHERE descricao = ?";
 		return buscaResultado(sql, descricao);
 	}
@@ -59,7 +59,7 @@ public class CategoriaDAO extends DAO<Categoria> {
 		return listaResultados(sql, tipo.name());
 	}
 
-	public Categoria buscaPor(long id) {
+	public Categoria buscaPor(int id) {
 		String sql = "SELECT * FROM categorias WHERE id = ?";
 		return buscaResultado(sql, id);
 	}

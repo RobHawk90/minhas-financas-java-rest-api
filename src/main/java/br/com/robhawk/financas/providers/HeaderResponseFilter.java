@@ -5,6 +5,12 @@ import javax.ws.rs.container.ContainerResponseContext;
 import javax.ws.rs.container.ContainerResponseFilter;
 import javax.ws.rs.core.MediaType;
 
+/**
+ * Intercepta as respostas que estão sendo enviadas e converte caracteres para o
+ * formato compativel com pt-BR.
+ * 
+ * @author Robert
+ */
 public class HeaderResponseFilter implements ContainerResponseFilter {
 
 	public void filter(ContainerRequestContext request, ContainerResponseContext response) {

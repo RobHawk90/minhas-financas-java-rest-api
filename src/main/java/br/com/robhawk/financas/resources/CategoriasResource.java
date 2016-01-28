@@ -48,7 +48,7 @@ public class CategoriasResource {
 	@Path("/descricao/{descricao}")
 	@Produces(APPLICATION_JSON)
 	public Response buscaPelaDescricao(@PathParam("descricao") String descricao) {
-		Categoria categoria = dao.buscaPela(descricao);
+		Categoria categoria = dao.buscaPor(descricao);
 		return Response.ok(categoria).build();
 	}
 

@@ -71,4 +71,9 @@ public class ContaDAO extends DAO<Conta> {
 		String sql = "SELECT * FROM contas ORDER BY descricao";
 		return listaResultados(sql);
 	}
+
+	public Conta buscaPor(String descricao) {
+		String sql = "SELECT * FROM contas WHERE descricao = ?";
+		return buscaResultado(sql, descricao);
+	}
 }

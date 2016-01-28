@@ -2,8 +2,9 @@ package br.com.robhawk.financas.database;
 
 public enum EscopoConexao {
 
-	PRODUCAO("jdbc:mysql://localhost:3306/minhas_financas", "root", ""),
-	TESTES("jdbc:mysql://localhost:3306/minhas_financas_testes", "root", "");
+	PRODUCAO("jdbc:mysql://localhost:3306/minhas_financas", "root", "root"),
+	CRIACAO("jdbc:mysql://localhost:3306/", "root", "root"),
+	TESTES("jdbc:mysql://localhost:3306/minhas_financas_testes", "root", "root");
 
 	private String url;
 	private String usuario;
