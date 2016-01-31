@@ -21,8 +21,13 @@ public class HeaderResponseFilter implements ContainerResponseFilter {
 
 			if (!contentType.contains("charset")) {
 				contentType = contentType + ";charset=ISO-8859-1";
+				//contentType = contentType + ";charset=UTF-8";
 				response.getHeaders().putSingle("Content-Type", contentType);
 			}
 		}
+
+		response.getHeaders().add("Access-Control-Allow-Origin", "*");
+		response.getHeaders().add("Access-Control-Allow-Methods", "GET, POST, DELETE, PUT");
+		response.getHeaders().add("Access-Control-Allow-Headers", "Content-Type");
 	}
 }

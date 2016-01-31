@@ -8,7 +8,7 @@ import org.glassfish.jersey.server.ServerProperties;
 import br.com.robhawk.financas.providers.HeaderResponseFilter;
 
 public class Servidor {
-	public static final String URL = "http://localhost:8080/estoque-api";
+	public static final String URL = "http://localhost:8080/minhas-financas-api";
 
 	public static void main(String[] args) throws Exception {
 		Server jettyServer = constroi();
@@ -23,7 +23,7 @@ public class Servidor {
 
 	public static Server constroi() {
 		ServletContextHandler context = new ServletContextHandler(ServletContextHandler.SESSIONS);
-		context.setContextPath("/estoque-api");
+		context.setContextPath("/minhas-financas-api");
 
 		ServletHolder jerseyServlet = context.addServlet(org.glassfish.jersey.servlet.ServletContainer.class, "/*");
 		jerseyServlet.setInitOrder(0);

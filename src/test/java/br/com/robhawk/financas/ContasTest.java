@@ -14,6 +14,7 @@ import javax.ws.rs.core.GenericType;
 import javax.ws.rs.core.Response;
 
 import org.eclipse.jetty.server.Server;
+import org.glassfish.jersey.filter.LoggingFilter;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
@@ -38,7 +39,7 @@ public class ContasTest {
 		server = Servidor.constroi();
 		server.start();
 
-		target = ClientBuilder.newClient().target(Servidor.URL + "/contas");
+		target = ClientBuilder.newClient().target(Servidor.URL + "/contas").register(LoggingFilter.class);
 	}
 
 	@AfterClass

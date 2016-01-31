@@ -7,7 +7,6 @@ import static java.time.format.DateTimeFormatter.ofPattern;
 import java.time.LocalDate;
 
 import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 
@@ -29,7 +28,6 @@ public class Parcela {
 		return id;
 	}
 
-	@XmlElement
 	public void setId(int id) {
 		this.id = id;
 	}
@@ -39,17 +37,14 @@ public class Parcela {
 		return dataVencimento;
 	}
 
-	@XmlTransient
 	public void setDataVencimento(LocalDate dataVencimento) {
 		this.dataVencimento = dataVencimento;
 	}
 
-	@XmlTransient
 	public LocalDate getDataPagamento() {
 		return dataPagamento;
 	}
 
-	@XmlTransient
 	public void setDataPagamento(LocalDate dataPagamento) {
 		this.dataPagamento = dataPagamento;
 	}
@@ -62,7 +57,6 @@ public class Parcela {
 		return dataPagamento.format(ofPattern("dd/MM/yyyy"));
 	}
 
-	@XmlElement(name = "dataPagamento")
 	public void setDataPagamentoBr(String dataPagamento) {
 		this.dataPagamento = dataPagamento == null || dataPagamento.isEmpty() ? null
 				: parse(dataPagamento, ofPattern("dd/MM/yyyy"));
@@ -73,7 +67,6 @@ public class Parcela {
 		return valor.getAmount().doubleValue();
 	}
 
-	@XmlElement
 	public void setValor(double valor) {
 		this.valor = Money.of(Conta.MOEDA_REAL, valor);
 	}
@@ -83,7 +76,6 @@ public class Parcela {
 		return tipo;
 	}
 
-	@XmlElement
 	public void setTipo(TipoParcela tipo) {
 		this.tipo = tipo;
 	}
@@ -93,12 +85,10 @@ public class Parcela {
 		return foiPaga;
 	}
 
-	@XmlElement
 	public void setFoiPaga(boolean foiPaga) {
 		this.foiPaga = foiPaga;
 	}
 
-	@XmlTransient
 	public void setDataPagamentoBanco(String dataPagamento) {
 		this.dataPagamento = dataPagamento == null || dataPagamento.isEmpty() ? null : parse(dataPagamento);
 	}
@@ -116,7 +106,6 @@ public class Parcela {
 		this.dataVencimento = parse(dataVencimento);
 	}
 
-	@XmlTransient
 	public String getDataVencimentoBanco() {
 		return this.dataVencimento.format(ISO_DATE);
 	}
@@ -131,7 +120,6 @@ public class Parcela {
 		return this.movimentacaoId;
 	}
 
-	@XmlElement
 	public void setMovimentacaoId(int movimentacaoId) {
 		this.movimentacaoId = movimentacaoId;
 	}

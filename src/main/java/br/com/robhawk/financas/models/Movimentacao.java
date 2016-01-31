@@ -11,7 +11,6 @@ import java.util.LinkedList;
 import java.util.List;
 
 import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 
@@ -41,7 +40,6 @@ public class Movimentacao {
 		return id;
 	}
 
-	@XmlElement
 	public void setId(int id) {
 		this.id = id;
 	}
@@ -51,7 +49,6 @@ public class Movimentacao {
 		return descricao;
 	}
 
-	@XmlElement
 	public void setDescricao(String descricao) {
 		this.descricao = descricao;
 	}
@@ -71,12 +68,10 @@ public class Movimentacao {
 		return data.format(ofPattern("dd/MM/yyyy"));
 	}
 
-	@XmlElement(name = "data")
 	public void setDataBr(String data) {
 		this.data = parse(data, ofPattern("dd/MM/yyyy"));
 	}
 
-	@XmlTransient
 	public void setDataBanco(String data) {
 		this.data = parse(data);
 	}
@@ -86,7 +81,6 @@ public class Movimentacao {
 		return valor.getAmount().doubleValue();
 	}
 
-	@XmlElement
 	public void setValor(double valor) {
 		this.valor = Money.of(Conta.MOEDA_REAL, valor);
 	}
@@ -101,7 +95,6 @@ public class Movimentacao {
 		return quantidadeParcelas;
 	}
 
-	@XmlElement
 	public void setQuantidadeParcelas(int quantidadeParcelas) {
 		this.quantidadeParcelas = quantidadeParcelas;
 		this.emParcelas = quantidadeParcelas > 1;
@@ -112,7 +105,6 @@ public class Movimentacao {
 		return tipoParcela;
 	}
 
-	@XmlElement
 	public void setTipoParcela(TipoParcela tipoParcela) {
 		this.tipoParcela = tipoParcela;
 	}
@@ -146,7 +138,6 @@ public class Movimentacao {
 	 * maior que 1, o valor da movimentação é dividido pelo número de parcelas e
 	 * colocado em cada uma para a data do próximo período.
 	 */
-	@XmlTransient
 	public void constroiParcelasSeNecessario() {
 		if (isEmParcelas() && getData() != null && parcelas.isEmpty()) {
 			double valorDeCadaParcela = getValor() / getQuantidadeParcelas();

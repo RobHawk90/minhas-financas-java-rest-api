@@ -33,7 +33,6 @@ public class Conta {
 		return id;
 	}
 
-	@XmlAttribute
 	public void setId(int id) {
 		this.id = id;
 	}
@@ -43,7 +42,6 @@ public class Conta {
 		return descricao;
 	}
 
-	@XmlAttribute
 	public void setDescricao(String descricao) {
 		this.descricao = descricao;
 	}
@@ -53,7 +51,6 @@ public class Conta {
 		return saldo.getAmount().doubleValue();
 	}
 
-	@XmlAttribute
 	public void setSaldo(double valor) {
 		this.saldo = Money.of(MOEDA_REAL, valor);
 	}

@@ -36,6 +36,8 @@ public class TesteConverter {
 		movimentacao.setDataBr("10/01/2016");
 		movimentacao.setParcelas(Arrays.asList(parcela));
 		movimentacao.setValor(200);
+		
+		Conta contaCorrente = new Conta("Corrente", 3000);
 
 		Map<String, String> properties = new HashMap<>();
 		// Set the Marshaller media type to JSON or XML
@@ -54,7 +56,7 @@ public class TesteConverter {
 		marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
 
 		// Marshal the employee object to JSON and print the output to console
-		marshaller.marshal(movimentacao, System.out);
+		marshaller.marshal(contaCorrente, System.out);
 
 		Unmarshaller unmarshaller = jc.createUnmarshaller();
 		movimentacao = (Movimentacao) unmarshaller.unmarshal(new File("C:/testes/contas.json"));
