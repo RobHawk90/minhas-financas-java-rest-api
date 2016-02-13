@@ -4,6 +4,8 @@ import static br.com.robhawk.financas.models.TipoCategoria.DESPESA;
 import static br.com.robhawk.financas.models.TipoCategoria.RECEITA;
 import static br.com.robhawk.financas.utils.Entidade.JSON;
 import static br.com.robhawk.financas.utils.Entidade.json;
+import static org.eclipse.jetty.http.HttpStatus.NOT_FOUND_404;
+import static org.eclipse.jetty.http.HttpStatus.NO_CONTENT_204;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
@@ -82,6 +84,18 @@ public class CategoriasTest {
 
 		Categoria categoriaEditada = client.path("/" + categoria.getId()).request(JSON).get(Categoria.class);
 		assertTrue(categoria.equals(categoriaEditada));
+	}
+
+	@Test
+	public void removeCategorias() {
+		Categoria transporte = client.request(JSON).post(json(new Categoria("Transporte", DESPESA)))
+				.readEntity(Categoria.class);
+
+		Response responseDelete = client.path("/" + transporte.getId()).request().delete();
+		assertEquals(NO_CONTENT_204, responseDelete.getStatus());
+
+		Response responseGet = client.path("/" + transporte.getId()).request().get();
+		assertEquals(NOT_FOUND_404, responseGet.getStatus());
 	}
 
 	@Test

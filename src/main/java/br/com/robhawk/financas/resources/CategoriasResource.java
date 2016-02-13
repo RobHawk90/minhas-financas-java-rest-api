@@ -7,6 +7,7 @@ import java.util.List;
 import javax.validation.Valid;
 import javax.validation.constraints.Min;
 import javax.ws.rs.Consumes;
+import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
@@ -44,6 +45,16 @@ public class CategoriasResource {
 		return Response.serverError().build();
 	}
 
+	@DELETE
+	@Path("/{id}")
+	@Produces(APPLICATION_JSON)
+	public Response removeCategoria(@PathParam("id") int id) {
+		if (dao.deleta(id))
+			return Response.noContent().build();
+
+		return Response.serverError().build();
+	}
+
 	@GET
 	@Produces(APPLICATION_JSON)
 	public Response listaTodas() {
@@ -74,6 +85,10 @@ public class CategoriasResource {
 	@Produces(APPLICATION_JSON)
 	public Response buscaPorId(@Min(1) @PathParam("id") int id) {
 		Categoria categoria = dao.buscaPor(id);
+
+		if (categoria == null)
+			return Response.status(404).build();
+
 		return Response.ok(categoria).build();
 	}
 

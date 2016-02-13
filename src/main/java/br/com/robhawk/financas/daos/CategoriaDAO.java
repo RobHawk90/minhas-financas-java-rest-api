@@ -82,4 +82,9 @@ public class CategoriaDAO extends DAO<Categoria> {
 		return listaResultados("SELECT * FROM categorias ORDER BY descricao");
 	}
 
+	public boolean deleta(int id) {
+		String sql = "DELETE FROM categorias WHERE id = ?";
+		return executa(sql, id);
+	}
+
 }
