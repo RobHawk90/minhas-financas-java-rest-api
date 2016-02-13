@@ -127,6 +127,17 @@ public class CategoriasTest {
 	}
 
 	@Test
+	public void listaTodasAsCategorias() throws Exception {
+		client.request(JSON).post(json(new Categoria("Alimentação", DESPESA)));
+		client.request(JSON).post(json(new Categoria("Salário", RECEITA)));
+
+		List<Categoria> categorias = client.request(JSON).get(new GenericType<List<Categoria>>() {
+		});
+
+		assertEquals(2, categorias.size());
+	}
+
+	@Test
 	public void naoSalvaCategoriaComMesmaDescricao() {
 		Categoria categoria = new Categoria("Alimentação", DESPESA);
 		client.request().post(json(categoria));

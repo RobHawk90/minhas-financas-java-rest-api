@@ -45,6 +45,14 @@ public class CategoriasResource {
 	}
 
 	@GET
+	@Produces(APPLICATION_JSON)
+	public Response listaTodas() {
+		List<Categoria> categorias = dao.listaTodas();
+		return Response.ok(new GenericEntity<List<Categoria>>(categorias) {
+		}).build();
+	}
+
+	@GET
 	@Path("/descricao/{descricao}")
 	@Produces(APPLICATION_JSON)
 	public Response buscaPelaDescricao(@PathParam("descricao") String descricao) {

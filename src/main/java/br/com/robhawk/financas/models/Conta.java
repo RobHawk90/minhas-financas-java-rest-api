@@ -1,5 +1,6 @@
 package br.com.robhawk.financas.models;
 
+import javax.validation.constraints.NotNull;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlRootElement;
 
@@ -16,6 +17,7 @@ public class Conta {
 
 	@NotEmpty(message = "A conta deve conter uma descrição")
 	private String descricao;
+	@NotNull(message = "Deve ser numérico")
 	private Money saldo;
 	public static final CurrencyUnit MOEDA_REAL = CurrencyUnit.getInstance("BRL");
 
@@ -25,7 +27,7 @@ public class Conta {
 	}
 
 	public Conta() {
-		this.saldo = Money.of(MOEDA_REAL, 0);
+		//this.saldo = Money.of(MOEDA_REAL, 0);
 	}
 
 	@XmlAttribute
@@ -48,7 +50,7 @@ public class Conta {
 
 	@XmlAttribute
 	public double getSaldo() {
-		return saldo.getAmount().doubleValue();
+		return saldo == null ? 0 : saldo.getAmount().doubleValue();
 	}
 
 	public void setSaldo(double valor) {

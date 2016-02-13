@@ -78,4 +78,8 @@ public class CategoriaDAO extends DAO<Categoria> {
 		return false;
 	}
 
+	public List<Categoria> listaTodas() {
+		return listaResultados("SELECT * FROM categorias ORDER BY descricao");
+	}
+
 }
